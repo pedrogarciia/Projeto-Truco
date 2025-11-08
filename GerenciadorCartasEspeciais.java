@@ -50,14 +50,14 @@ public class GerenciadorCartasEspeciais {
             "Troca a carta mais forte do adversário com outra do baralho.",
             "Alteração",
             ctx -> {
-                Jogador bot = ctx.getComputador();
-                if (bot.getMao().isEmpty()) return;
-                Carta maisForteBot = bot.getMao().stream()
+                Computador c = ctx.getComputador();
+                if (c.getMao().isEmpty()) return;
+                Carta maisForteBot = c.getMao().stream()
                     .max((a, b) -> Integer.compare(a.getPeso(), b.getPeso()))
                     .get();
-                bot.getMao().remove(maisForteBot);
+                c.getMao().remove(maisForteBot);
                 Carta nova = new Baralho().distribuir();
-                bot.receberCarta(nova);
+                c.receberCarta(nova);
                 System.out.println("🃏 Você fez o bot trocar sua carta mais forte por uma nova aleatória!");
             }
         ));
@@ -142,7 +142,7 @@ public class GerenciadorCartasEspeciais {
             "Risco",
             ctx -> {
                 Jogador j = ctx.getJogador();
-                Jogador bot = ctx.getComputador();
+                Computador bot = ctx.getComputador();
                 if (j.getMao().isEmpty() || bot.getMao().isEmpty()) return;
 
                 Carta forteJogador = j.getMao().stream()
