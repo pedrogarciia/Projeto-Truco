@@ -3,7 +3,8 @@ import java.util.Random;
 
 public class Partida {
     private Jogador jogador;
-    private Jogador computador;
+    private Computador computador;
+
     private Scanner sc = new Scanner(System.in);
     private Random r = new Random();
 
@@ -11,7 +12,7 @@ public class Partida {
     private int pontosComputador = 0;
     private int pontosRodada = 1;
 
-    public Partida(Jogador jogador, Jogador computador) {
+    public Partida(Jogador jogador, Computador computador) {
         this.jogador = jogador;
         this.computador = computador;
     }
@@ -40,7 +41,7 @@ public class Partida {
         }
     }
 
-    private void prepararBaralho(Jogador j1, Jogador j2) {
+    private void prepararBaralho(Jogador j1, Computador j2){
         Baralho baralho = new Baralho();
         baralho.embaralhar();
         baralho.definirManilha();
@@ -56,7 +57,8 @@ public class Partida {
         System.out.println("Vira: " + baralho.getVira());
 
         // 🔹 Mantido: aplicar cartas de alteração antes de começar
-        j1.aplicarCartasDeAlteracao(baralho, j2);
+        j1.aplicarCartasDeAlteracao(baralho, (Jogador) j2);
+
     }
 
     private void jogarMao() {
@@ -179,6 +181,3 @@ public class Partida {
         return r.nextInt(10) < 2; // 20% de chance
     }
 }
-
-
-
