@@ -6,8 +6,7 @@ public class App {
 
         // 🔹 Criação dos jogadores
         Jogador jogador = new Jogador("Você");
-        Computador computador = new Computador("Bot Caipira");
-
+        Computador computador = FabricaDeBots.gerarOponente(1); // 1 = primeira partida
         // 🔹 Inicializa o sistema de cartas especiais
         GerenciadorCartasEspeciais.inicializarCartas();
 
