@@ -1,5 +1,9 @@
 # Projeto Truco
 
+• Pedro Carvalho Furtado 
+• Pedro Garcia Jordão 
+• João Gabriel Diniz Gastão
+
 ## 1. Descrição Geral
 O projeto **Truco** consiste em uma implementação do tradicional jogo de cartas homônimo, desenvolvida em **Java**, com o objetivo de aplicar os principais conceitos de **Programação Orientada a Objetos (POO)**. O sistema simula partidas entre o jogador e o computador, incluindo lógica de decisão automatizada, gerenciamento de cartas e aplicação das regras básicas do truco.
 
