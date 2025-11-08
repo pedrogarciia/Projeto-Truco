@@ -6,7 +6,7 @@ public class App {
 
         // 🔹 Criação dos jogadores
         Jogador jogador = new Jogador("Você");
-        Jogador computador = new Jogador("Bot Caipira");
+        Computador computador = new Computador("Bot Caipira");
 
         // 🔹 Inicializa o sistema de cartas especiais
         GerenciadorCartasEspeciais.inicializarCartas();
@@ -34,3 +34,4 @@ public class App {
         System.out.println("\nObrigado por jogar o TRUCO ROGUE LIKE!");
     }
 }
+
