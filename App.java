@@ -34,4 +34,3 @@ public class App {
         System.out.println("\nObrigado por jogar o TRUCO ROGUE LIKE!");
     }
 }
-
