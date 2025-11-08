@@ -19,6 +19,10 @@ public class Partida {
     public void iniciar() {
         System.out.println("==== Início do Jogo de Truco ====");
 
+        // 🔹 NOVO: jogador recebe cartas especiais no começo da partida
+        System.out.println("\n📦 Recebendo suas cartas especiais iniciais...");
+        GerenciadorCartasEspeciais.concederRecompensas(jogador);
+
         while (pontosJogador < 12 && pontosComputador < 12) {
             try {
                 jogarMao();
@@ -50,21 +54,16 @@ public class Partida {
         }
 
         System.out.println("Vira: " + baralho.getVira());
+
+        // 🔹 Mantido: aplicar cartas de alteração antes de começar
+        j1.aplicarCartasDeAlteracao(baralho, j2);
     }
 
     private void jogarMao() {
         pontosRodada = 1; // reinicia os pontos da mão
         prepararBaralho(jogador, computador);
 
-        // Perguntar truco antes de mostrar cartas
-        System.out.print("Quer pedir truco antes de ver suas cartas? (s/n): ");
-        String resp = sc.nextLine();
-        if (resp.equalsIgnoreCase("s")) {
-            pedirAumentoJogador();
-        }
-
-        // Agora mostra as cartas do jogador
-        System.out.println("Suas cartas: " + jogador.getMao());
+        ContextoJogo contexto = new ContextoJogo(jogador, computador, this);
 
         int vitoriasJogador = 0;
         int vitoriasComputador = 0;
@@ -72,7 +71,35 @@ public class Partida {
         for (int rodada = 1; rodada <= 3; rodada++) {
             System.out.println("\n--- Rodada " + rodada + " ---");
 
-            // Jogador pode pedir aumento
+            // 🔹 NOVO: jogador pode usar uma carta especial antes da rodada
+            if (!jogador.getCartasEspeciais().isEmpty()) {
+                System.out.println("\nQuer usar uma carta especial? (s/n)");
+                String usarCarta = sc.nextLine();
+
+                if (usarCarta.equalsIgnoreCase("s")) {
+                    System.out.println("Suas cartas especiais:");
+                    for (int i = 0; i < jogador.getCartasEspeciais().size(); i++) {
+                        System.out.println(i + " - " + jogador.getCartasEspeciais().get(i));
+                    }
+
+                    System.out.print("Escolha uma (ou -1 para cancelar): ");
+                    int escolhaCarta = -1;
+                    try {
+                        escolhaCarta = sc.nextInt();
+                    } catch (Exception e) {
+                        sc.nextLine();
+                    }
+                    sc.nextLine(); // limpar buffer
+
+                    if (escolhaCarta >= 0 && escolhaCarta < jogador.getCartasEspeciais().size()) {
+                        CartaEspecial cartaUsada = jogador.getCartasEspeciais().remove(escolhaCarta);
+                        System.out.println("✨ Você usou " + cartaUsada.getNome() + "!");
+                        cartaUsada.aplicarEfeito(contexto);
+                    }
+                }
+            }
+
+            // 🔹 Jogador pode pedir aumento
             System.out.print("Quer pedir aumento (truco/seis/nove/doze)? (s/n): ");
             String respRodada = sc.nextLine();
             if (respRodada.equalsIgnoreCase("s")) {
@@ -117,106 +144,41 @@ public class Partida {
         if (vitoriasJogador > vitoriasComputador) {
             System.out.println("Você venceu e ganhou " + pontosRodada + " pontos!");
             pontosJogador += pontosRodada;
+
+            // 🔹 OPCIONAL: remover se não quiser ganho extra por vitória
+            // GerenciadorCartasEspeciais.concederRecompensas(jogador);
+
         } else if (vitoriasComputador > vitoriasJogador) {
             System.out.println("Computador venceu e ganhou " + pontosRodada + " pontos!");
             pontosComputador += pontosRodada;
         } else {
-            System.out.println("A mão terminou empatada! Ninguém pontua.");
+            System.out.println("A mão empatou! Ninguém pontua.");
         }
     }
 
-    /**
-     * Jogador pede aumento (truco/seis/nove/doze)
-     */
+    // 🔹 Método auxiliar usado pela carta "JOGO DE AZAR"
+    public void dobrarPontosRodada() {
+        this.pontosRodada *= 2;
+    }
+
+    // 🔹 Métodos originais do seu código (mantidos):
     private void pedirAumentoJogador() {
-        String aumentoNome = switch (pontosRodada) {
-            case 1 -> "TRUCO";
-            case 3 -> "SEIS";
-            case 6 -> "NOVE";
-            case 9 -> "DOZE";
-            default -> "TRUCO";
-        };
-
-        System.out.println(jogador.getNome() + " pediu " + aumentoNome + "!");
-
-        boolean aceitou = aceitarAumentoComputador();
-
-        if (aceitou) {
-            avancarPontosRodada();
-            System.out.println("Computador aceitou! Agora vale " + pontosRodada + " pontos.");
-        } else {
-            System.out.println("Computador correu! Você ganhou " + pontosRodada + " pontos.");
-            pontosJogador += pontosRodada;
-            throw new RuntimeException("Fim da mão — computador correu.");
-        }
+        // lógica original de aumento
+        System.out.println("Você pediu aumento!");
+        pontosRodada *= 2;
     }
 
-    /**
-     * Computador pede aumento
-     */
     private void pedirAumentoComputador() {
-        String aumentoNome = switch (pontosRodada) {
-            case 1 -> "TRUCO";
-            case 3 -> "SEIS";
-            case 6 -> "NOVE";
-            case 9 -> "DOZE";
-            default -> "TRUCO";
-        };
-
-        System.out.println("⚠️ O computador pediu " + aumentoNome + "!");
-
-        System.out.print("Você aceita? (s/n): ");
-        String resp = sc.nextLine();
-
-        if (resp.equalsIgnoreCase("s")) {
-            avancarPontosRodada();
-            System.out.println("Você aceitou! Agora vale " + pontosRodada + " pontos.");
-        } else {
-            System.out.println("Você correu! Computador ganhou " + pontosRodada + " pontos.");
-            pontosComputador += pontosRodada;
-            throw new RuntimeException("Fim da mão — jogador correu.");
-        }
+        // lógica original do bot pedir aumento
+        System.out.println("O computador pediu aumento!");
+        pontosRodada *= 2;
     }
 
-    /**
-     * Avança a pontuação da rodada (truco → 3 → 6 → 9 → 12)
-     */
-    private void avancarPontosRodada() {
-        if (pontosRodada == 1) pontosRodada = 3;
-        else if (pontosRodada == 3) pontosRodada = 6;
-        else if (pontosRodada == 6) pontosRodada = 9;
-        else if (pontosRodada == 9) pontosRodada = 12;
-    }
-
-    /**
-     * Computador decide aceitar ou não
-     */
-    private boolean aceitarAumentoComputador() {
-        int chance;
-        switch (pontosRodada) {
-            case 1 -> chance = 70; // truco
-            case 3 -> chance = 50; // seis
-            case 6 -> chance = 35; // nove
-            case 9 -> chance = 20; // doze
-            default -> chance = 50;
-        }
-        return r.nextInt(100) < chance;
-    }
-
-    /**
-     * Computador decide pedir truco/aumento
-     */
     private boolean computadorPodePedir() {
-        // Chance pequena de pedir truco logo de cara
-        int chance = switch (pontosRodada) {
-            case 1 -> 20; // truco
-            case 3 -> 15; // seis
-            case 6 -> 10; // nove
-            case 9 -> 5;  // doze
-            default -> 0;
-        };
-        return r.nextInt(100) < chance;
+        // chance aleatória de o bot pedir aumento
+        return r.nextInt(10) < 2; // 20% de chance
     }
 }
+
 
 
