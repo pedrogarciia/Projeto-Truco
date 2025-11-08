@@ -1,42 +1,14 @@
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
-public class Computador {
-    private String nome;
-    private List<Carta> mao;
-    private Random random;
+public class Computador extends Jogador {
 
-    // 🎯 probabilidades alteráveis por cartas
+    private Random random;
     private int chanceFuga = 20;
     private int chanceAceitarTruco = 50;
 
     public Computador(String nome) {
-        this.nome = nome;
-        this.mao = new ArrayList<>();
+        super(nome);
         this.random = new Random();
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public List<Carta> getMao() {
-        return mao;
-    }
-
-    public void limparMao() {
-        mao.clear();
-    }
-
-    public void receberCarta(Carta carta) {
-        mao.add(carta);
-    }
-
-    public Carta jogarCarta(int indice) {
-        if (mao.isEmpty()) return null;
-        if (indice < 0 || indice >= mao.size()) indice = random.nextInt(mao.size());
-        return mao.remove(indice);
     }
 
     // ==================================================
@@ -69,10 +41,5 @@ public class Computador {
     public boolean deveAceitarTruco() {
         int roll = random.nextInt(100);
         return roll < chanceAceitarTruco;
-    }
-
-    @Override
-    public String toString() {
-        return nome;
     }
 }
